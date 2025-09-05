@@ -14,7 +14,7 @@ load_dotenv()
 client = genai.Client(vertexai=False)
 
 
-def gemini_embeddings_batch(texts: List[str]) -> List[Any]:
+def gemini_embed_documents(texts: List[str]) -> List[Any]:
     """Embed a batch of texts."""
     try:
         # client = genai.Client(vertexai=False)
@@ -27,5 +27,3 @@ def gemini_embeddings_batch(texts: List[str]) -> List[Any]:
     except Exception as e:
         logger.error(f"Error embedding batch of docs! {e}")
         
-    
-    

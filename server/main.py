@@ -17,7 +17,7 @@ from server.common.models import (
     SearchRequest
 )
 from server.search.generate_embeddings import embed_batch_of_documents
-from server.search.search_index import create_search_index
+from server.search.search_index import create_search_index, get_search_results
 
 # Load env variables. 
 load_dotenv()
@@ -92,7 +92,6 @@ def add_listing(request: AirBnbListingRequest):
         # Insert new listing. 
         doc["_id"] = doc.pop("id")
         
-        # TODO: Add embedding of document
         result = collection.insert_one(doc)
         return {"message": "Listing added", "id": str(result.inserted_id)}
     except Exception as e:
@@ -150,8 +149,28 @@ def batch_embed_documents():
     result = create_search_index(DB_NAME,  COLLECTION_NAME)
     return result
 
+
 @app.post("/search")
 def search_listings(request: SearchRequest):
     """Search for Airbnb listings."""
-    print(request)
-    return {"user_query": "user_query"}
+    try:
+        logger.info(f"Search request: {request.dict()}")
+
+        result = get_search_results(
+            user_query=request.user_query,
+            num_candidates=request.num_candidates,
+            limit=request.limit,
+            return_full_documents=request.return_full_documents,
+            similarity_threshold=request.similarity_threshold,
+            reviews_rating=request.reviews_rating,
+            top_k=request.top_k
+        )
+
+        return json.loads(json_util.dumps(result))
+    except ValueError as ve:
+        logger.error(f"Validation error: {ve}")
+        raise HTTPException(status_code=400, detail=str(ve))
+
+    except Exception as e:
+        logger.exception("Search failed due to unexpected error.")
+        raise HTTPException(status_code=500, detail="Internal server error")

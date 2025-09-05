@@ -1,11 +1,12 @@
 """Generate Emebddings using gemini."""
 
-from tqdm import tqdm
+from typing import Any, Dict 
 
 from pymongo import UpdateOne
+from tqdm import tqdm
 
 from server.common.logging import logger
-from server.common.utils import gemini_embeddings_batch
+from server.common.utils import gemini_embed_documents
 
 
 cols_to_embed = [
@@ -15,11 +16,15 @@ cols_to_embed = [
     "amenities",
     "cancellation_policy",
     "address",
-    # "review_scores"
 ]
 
-def build_text(doc) -> str:
-    """Build text to embed."""
+
+def build_text(doc: Dict[str, Any]) -> str:
+    """Build text to embed.
+    
+    Args:
+        doc: Airbnb listing / document.  
+    """
     text = ""
     for col in cols_to_embed:
         text += f"""
@@ -48,7 +53,7 @@ def embed_batch_of_documents(collection, batch_size):
                 logger.info("No more documents to embed.")
                 break
             inputs = [build_text(doc) for doc in docs]
-            embeddings = gemini_embeddings_batch(inputs)
+            embeddings = gemini_embed_documents(inputs)
             
             # Store batch updates. 
             updates = []

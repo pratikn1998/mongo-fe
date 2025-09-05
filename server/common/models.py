@@ -134,3 +134,9 @@ class BatchEmbedRequest(BaseModel):
     
 class SearchRequest(BaseModel):
     user_query: str
+    num_candidates: Optional[int] = 150
+    limit: Optional[int] = 10
+    top_k: Optional[int] = 5
+    return_full_documents: Optional[bool] = True
+    similarity_threshold: Optional[float] = 0.6
+    reviews_rating: Optional[int] = None
