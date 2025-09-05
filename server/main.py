@@ -141,7 +141,7 @@ def batch_embed_documents(
     
 
 @app.post("/search/create")
-def batch_embed_documents():
+def create_vector_search_index():
     """Create a search index. 
     
     This is a one time activity for a colleciton. 

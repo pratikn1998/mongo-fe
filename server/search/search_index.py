@@ -34,7 +34,7 @@ def search_vector_store(
     # Config with user query. 
     vector_search_config =  {
             '$vectorSearch': {
-                'index': 'vector_index_filter', 
+                'index': os.getenv("INDEX_NAME"), 
                 'path': 'embedding', 
                 'queryVector': embedded_query, 
                 'numCandidates': num_candidates, 
